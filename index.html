@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRW — Specialised Research Wing</title>
+<style>
+:root {
+  --black: #000;
+  --bg: #06060A;
+  --bg2: #0C0C14;
+  --bg3: #10101A;
+  --panel: #14141E;
+  --border: #1C1C2E;
+  --border2: #262640;
+  --accent: #4A3FFF;
+  --accent2: #7B6FFF;
+  --accent3: #2A2280;
+  --gold: #C8A84B;
+  --gold2: #E8C86A;
+  --white: #E8E8F2;
+  --muted: #6868A0;
+  --dim: #303050;
+  --red: #CC2233;
+  --red2: #FF3344;
+  --green: #44CC66;
+  --amber: #CCAA22;
+  --orange: #EE6611;
+  --nav-h: 56px;
+  --mono: 'Courier New', monospace;
+  --sans: -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent3); border-radius: 2px; }
+
+/* ══════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(0,0,0,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nav-logo-mark {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.nav-logo-mark::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+
+.nav-logo-text {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.15em;
+}
+
+.nav-logo-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: block;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+}
+
+.nav-links a {
+  display: block;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--white);
+  border-color: var(--border2);
+}
+
+.nav-links a.active {
+  color: var(--accent2);
+  border-color: var(--accent3);
+}
+
+.nav-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  padding: 3px 8px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ══════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  padding-top: var(--nav-h);
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(74,63,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74,63,255,0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  animation: grid-pulse 8s ease-in-out infinite;
+}
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.hero-scan {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent2) 50%, var(--accent) 70%, transparent 100%);
+  animation: scan 10s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.8) 100%);
+}
+
+.hero-top {
+  background: var(--accent);
+  text-align: center;
+  padding: 5px 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: #fff;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 32px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-corp {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 40px;
+  animation: fade-in 1s ease both;
+}
+
+.hero-title {
+  text-align: center;
+  margin-bottom: 12px;
+  animation: fade-up 1s ease 0.2s both;
+}
+
+.hero-title .w1 { display: block; font-size: clamp(56px, 10vw, 100px); font-weight: 800; color: var(--white); letter-spacing: 0.1em; line-height: 0.95; }
+.hero-title .w2 { display: block; font-size: clamp(56px, 10vw, 100px); font-weight: 800; color: var(--accent2); letter-spacing: 0.1em; line-height: 0.95; }
+.hero-title .w3 { display: block; font-size: clamp(56px, 10vw, 100px); font-weight: 800; color: var(--white); letter-spacing: 0.1em; line-height: 0.95; }
+
+.hero-sub {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin: 28px 0 48px;
+  animation: fade-up 1s ease 0.4s both;
+}
+
+.hero-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 48px;
+  animation: fade-up 1s ease 0.5s both;
+}
+
+.hero-divider-line { flex: 1; height: 1px; background: var(--accent3); }
+.hero-divider-diamond { width: 8px; height: 8px; background: var(--accent); transform: rotate(45deg); flex-shrink: 0; }
+
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  width: 100%;
+  max-width: 640px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  animation: fade-up 1s ease 0.6s both;
+}
+
+.hero-meta-item {
+  background: var(--bg2);
+  padding: 16px 20px;
+}
+
+.hero-meta-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.hero-meta-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.hero-meta-value.gold { color: var(--gold); }
+.hero-meta-value.accent { color: var(--accent2); }
+
+.hero-nav-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+  animation: fade-in 1s ease 1.5s both;
+}
+
+.hero-nav-hint span {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+
+.hero-nav-hint-arrow {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, var(--accent3), transparent);
+  animation: bounce-arrow 2s ease-in-out infinite;
+}
+
+@keyframes bounce-arrow {
+  0%, 100% { transform: scaleY(1); opacity: 0.5; }
+  50% { transform: scaleY(1.3); opacity: 1; }
+}
+
+.hero-bottom {
+  background: var(--accent);
+  text-align: center;
+  padding: 5px 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: #fff;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ══════════════════════════════════════════════
+   SECTION WRAPPER
+══════════════════════════════════════════════ */
+.section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section:last-child { border-bottom: none; }
+
+/* ══════════════════════════════════════════════
+   SECTION HEADING
+══════════════════════════════════════════════ */
+.s-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.s-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent2);
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+
+.s-slash {
+  font-family: var(--mono);
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.s-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.s-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ══════════════════════════════════════════════
+   SUBHEADING
+══════════════════════════════════════════════ */
+.sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 36px 0 14px;
+}
+
+.sub-arrow { font-family: var(--mono); font-size: 14px; color: var(--accent2); font-weight: 700; }
+.sub-text { font-size: 14px; font-weight: 700; color: var(--white); letter-spacing: 0.06em; }
+
+/* ══════════════════════════════════════════════
+   BODY TEXT
+══════════════════════════════════════════════ */
+.body { color: #A8A8C8; font-size: 13.5px; line-height: 1.8; margin-bottom: 16px; }
+
+/* ══════════════════════════════════════════════
+   ACCENT BLOCK
+══════════════════════════════════════════════ */
+.ab {
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  background: rgba(74,63,255,0.05);
+  color: #A8A8C8;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  line-height: 1.8;
+  margin: 16px 0;
+}
+
+/* ══════════════════════════════════════════════
+   WARN BLOCK
+══════════════════════════════════════════════ */
+.wb {
+  border: 1px solid var(--red);
+  border-left: 4px solid var(--red);
+  padding: 14px 16px 14px 20px;
+  background: rgba(204,34,51,0.06);
+  color: var(--red2);
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 16px 0;
+  position: relative;
+}
+
+.wb::before {
+  content: '⚠';
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  background: var(--red);
+  color: #fff;
+  padding: 2px 4px;
+}
+
+/* ══════════════════════════════════════════════
+   INFO TABLE
+══════════════════════════════════════════════ */
+.it {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.it tr { border-bottom: 1px solid var(--border); }
+.it tr:last-child { border-bottom: none; }
+.it tr:hover td { background: rgba(74,63,255,0.03); }
+
+.it td:first-child {
+  padding: 11px 16px 11px 14px;
+  color: var(--accent2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  width: 220px;
+  border-left: 2px solid var(--accent3);
+  background: rgba(10,10,20,0.6);
+  vertical-align: top;
+}
+
+.it td:last-child {
+  padding: 11px 16px;
+  color: #C8C8E8;
+  background: rgba(13,13,24,0.5);
+}
+
+.it td:last-child.red { color: var(--red2); font-weight: 600; }
+.it td:last-child.gold { color: var(--gold); font-weight: 600; }
+
+/* ══════════════════════════════════════════════
+   RANK TABLE
+══════════════════════════════════════════════ */
+.rt {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.rt thead tr { background: var(--accent3); }
+.rt thead th {
+  padding: 10px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+  text-align: left;
+}
+
+.rt tbody tr { border-bottom: 1px solid var(--border); }
+.rt tbody tr:last-child { border-bottom: none; }
+.rt tbody tr:hover td { background: rgba(74,63,255,0.04); }
+
+.rt tbody td {
+  padding: 11px 14px;
+  background: var(--bg2);
+  vertical-align: top;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.rt tbody td:first-child {
+  border-left: 2px solid var(--accent3);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.rg { color: var(--gold) !important; }
+.ra { color: var(--accent2) !important; }
+.rw { color: var(--white) !important; }
+.rm { color: var(--muted) !important; }
+
+/* ══════════════════════════════════════════════
+   RISK TABLE
+══════════════════════════════════════════════ */
+.rist {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.rist thead tr { background: var(--accent3); }
+.rist thead th {
+  padding: 10px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.8);
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.rist tbody tr { border-bottom: 1px solid var(--border); }
+.rist tbody tr:last-child { border-bottom: none; }
+.rist tbody td {
+  padding: 11px 14px;
+  background: var(--bg2);
+  font-size: 12.5px;
+  color: var(--muted);
+  vertical-align: top;
+}
+
+.rist tbody td:first-child {
+  font-weight: 700;
+  font-size: 11px;
+  border-left: 3px solid;
+  letter-spacing: 0.08em;
+}
+
+.rist tbody td:nth-child(2) { color: var(--white); font-weight: 600; }
+
+.rl-low td:first-child { border-color: var(--green); color: var(--green) !important; }
+.rl-med td:first-child { border-color: var(--amber); color: var(--amber) !important; }
+.rl-high td:first-child { border-color: var(--orange); color: var(--orange) !important; }
+.rl-ext td:first-child { border-color: var(--red); color: var(--red2) !important; }
+
+/* ══════════════════════════════════════════════
+   BULLET / NUM LISTS
+══════════════════════════════════════════════ */
+.bl { list-style: none; margin: 12px 0; padding: 0; }
+.bl li {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 13.5px;
+  color: #A8A8C8;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.65;
+}
+.bl li:last-child { border-bottom: none; }
+.bl li::before { content: '▸'; color: var(--accent2); flex-shrink: 0; margin-top: 2px; }
+
+.nl { list-style: none; margin: 12px 0; padding: 0; counter-reset: n; }
+.nl li {
+  display: flex;
+  gap: 14px;
+  padding: 8px 0;
+  font-size: 13.5px;
+  color: #A8A8C8;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.65;
+  counter-increment: n;
+}
+.nl li:last-child { border-bottom: none; }
+.nl li::before {
+  content: counter(n) '.';
+  color: var(--accent2);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 22px;
+  margin-top: 3px;
+}
+
+/* ══════════════════════════════════════════════
+   DIVIDER
+══════════════════════════════════════════════ */
+.div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 52px 0;
+}
+.div-l { flex: 1; height: 1px; background: var(--border2); }
+.div-d { width: 5px; height: 5px; background: var(--accent3); transform: rotate(45deg); }
+
+/* ══════════════════════════════════════════════
+   SIGNATURE
+══════════════════════════════════════════════ */
+.sig {
+  margin-top: 52px;
+  padding-top: 36px;
+  border-top: 1px solid var(--border2);
+}
+
+.sig-lbl { font-size: 11px; color: var(--muted); font-style: italic; margin-bottom: 10px; }
+.sig-name { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+.sig-role { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.sig-line-bar { margin-top: 28px; height: 1px; background: var(--accent); width: 260px; }
+.sig-line-lbl { font-size: 11px; color: var(--dim); font-style: italic; margin-top: 6px; }
+
+/* ══════════════════════════════════════════════
+   CLASSIFIED FOOTER
+══════════════════════════════════════════════ */
+.c-footer {
+  background: var(--accent);
+  text-align: center;
+  padding: 6px 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: #fff;
+  text-transform: uppercase;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+}
+
+/* ══════════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .nav-links { display: none; }
+  .nav { padding: 0 16px; }
+  .section { padding: 56px 16px; }
+  .hero-body { padding: 40px 16px; }
+  .hero-meta { grid-template-columns: 1fr; }
+  .it td:first-child { width: 140px; font-size: 10px; }
+  .rt tbody td:first-child { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scan, .hero-grid { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#hero" class="nav-logo">
+    <div class="nav-logo-mark"></div>
+    <div>
+      <span class="nav-logo-text">SRW</span>
+      <span class="nav-logo-sub">VRC Division</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#ranks">Ranks</a></li>
+    <li><a href="#regulations">Regulations</a></li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#equipment">Equipment</a></li>
+    <li><a href="#protocols">Protocols</a></li>
+    <li><a href="#protocol7c">7-C</a></li>
+    <li><a href="#newmember">New Members</a></li>
+  </ul>
+  <div class="nav-badge">L5 Clearance</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-scan"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-top">██ &nbsp; TOP SECRET — SRW CLEARANCE REQUIRED &nbsp; ██</div>
+
+  <div class="hero-body">
+    <div class="hero-corp">Vlandask Research Corporation &nbsp;/&nbsp; Research &amp; Studies</div>
+
+    <div class="hero-title">
+      <span class="w1">SPECIALISED</span>
+      <span class="w2">RESEARCH</span>
+      <span class="w3">WING</span>
+    </div>
+
+    <div class="hero-sub">Official Personnel Handbook &nbsp;·&nbsp; SRW-HB-001</div>
+
+    <div class="hero-divider">
+      <div class="hero-divider-line"></div>
+      <div class="hero-divider-diamond"></div>
+      <div class="hero-divider-line"></div>
+    </div>
+
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Classification</div>
+        <div class="hero-meta-value gold">Top Secret</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Clearance Required</div>
+        <div class="hero-meta-value accent">L5 / SRW</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Commanding Officer</div>
+        <div class="hero-meta-value">Prof. Connor Manwell</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-nav-hint">
+    <span>Scroll to read</span>
+    <div class="hero-nav-hint-arrow"></div>
+  </div>
+
+  <div class="hero-bottom">██ &nbsp; TOP SECRET — SRW CLEARANCE REQUIRED &nbsp; ██</div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 1: ABOUT -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="about">
+  <div class="s-head">
+    <span class="s-num">01</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">About the SRW</span>
+    <div class="s-line"></div>
+  </div>
+
+  <p class="body">The Specialised Research Wing (SRW) is a compartmentalised sub-department of the Vlandask Research Corporation's Research &amp; Studies Division. It operates on a strict need-to-know basis and conducts research that falls outside the scope and clearance of standard R&amp;S departments.</p>
+
+  <p class="body">SRW personnel are hand-selected from the R&amp;S Division. Entry is not open to application. Personnel must hold the rank of Researcher or above and be selected by SRW Command. Upon entry, all SRW personnel are bound by this handbook and by Protocol 7-C at the SRW/L5 clearance tier.</p>
+
+  <table class="it">
+    <tr><td>Commanding Officer</td><td>Prof. Connor Manwell — Professor</td></tr>
+    <tr><td>Deputy CO</td><td>Assistant Professor — [Current Holder]</td></tr>
+    <tr><td>Parent Division</td><td>Research &amp; Studies — VRC</td></tr>
+    <tr><td>Clearance Tier</td><td class="gold">L5 / SRW — Highest Classification</td></tr>
+    <tr><td>Entry Requirement</td><td>Researcher+ — Invite Only</td></tr>
+    <tr><td>Entry Rank</td><td>Specialist Associate</td></tr>
+    <tr><td>Document Reference</td><td>SRW-HB-001</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 2: RANKS -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="ranks">
+  <div class="s-head">
+    <span class="s-num">02</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">Rank Structure</span>
+    <div class="s-line"></div>
+  </div>
+
+  <p class="body">SRW operates under its own internal rank structure, separate from the main R&amp;S ladder. All authority flows downward through the chain of command listed below.</p>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">2.1 — R&amp;S Executive Command</span></div>
+  <table class="rt">
+    <thead><tr><th>Rank</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="rg">Director of Research</td><td>Highest authority in R&amp;S. Countersigns all SRW directives. Final word on all operations.</td></tr>
+      <tr><td class="rg">Assistant Director of Research</td><td>Deputy to the Director. Assumes full command in the Director's absence.</td></tr>
+      <tr><td class="rg">Chief Research Officer</td><td>Senior operational leader. Oversees research quality and compliance across all divisions.</td></tr>
+      <tr><td class="rm">Scientific Board</td><td>Reviews and validates research. Approves high-risk experiments and updates documentation.</td></tr>
+      <tr><td class="rm">Advisory Board</td><td>Consultative body. Shapes long-term departmental direction, policy, and ethics.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">2.2 — SRW Command</span></div>
+  <table class="rt">
+    <thead><tr><th>Rank</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="ra">Professor</td><td>1IC of SRW. Full command authority. Writes regulations, maintains documentation, oversees all SRW operations.</td></tr>
+      <tr><td class="ra">Assistant Professor</td><td>2IC of SRW. Acts as Professor on LOA. Trained to operate the wing under all conditions.</td></tr>
+      <tr><td class="rw">Supervisory Specialist</td><td>Primary SRW leaders. Entrusted by the Professor to lead, train, and oversee specific projects.</td></tr>
+      <tr><td class="rw">Assistant Supervisory Specialist</td><td>Trial supervisory rank. Demonstrating leadership potential; assessed for full Supervisory status.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">2.3 — SRW Personnel</span></div>
+  <table class="rt">
+    <thead><tr><th>Rank</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="rw">Senior Specialist</td><td>Highest non-command rank. Extensive knowledge of SRW assets, facilities, and containment zones.</td></tr>
+      <tr><td class="rw">Specialist Researcher</td><td>Experienced SRW personnel. Actively participating in research, developing towards senior roles.</td></tr>
+      <tr><td class="rm">Junior Specialist Researcher</td><td>New SRW intakes. Passed the Associate phase. Still developing knowledge of SRW-specific assets.</td></tr>
+      <tr><td class="rm">Specialist Associate</td><td>Probationary entry rank. Supervised participation only. No independent access to restricted areas.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">2.4 — Clearance &amp; Access Cards</span></div>
+  <table class="it">
+    <tr><td>Hadron Access Card</td><td>Access to the HADRON Control Room</td></tr>
+    <tr><td>Specialist Card</td><td>SRW-specific access pass — all SRW personnel</td></tr>
+    <tr><td>U4 Access</td><td>Access to Unit 4 containment zones</td></tr>
+    <tr><td>CTZ Card</td><td>Access to the Containment Test Zone</td></tr>
+    <tr><td>Lab Card</td><td>Access to all R&amp;S laboratory areas</td></tr>
+    <tr><td>Supervisor Card</td><td>SRW Command only — full facility access</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 3: REGULATIONS -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="regulations">
+  <div class="s-head">
+    <span class="s-num">03</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">SRW Regulations</span>
+    <div class="s-line"></div>
+  </div>
+
+  <div class="ab">The following regulations apply to all SRW personnel at all times, in addition to standard R&amp;S regulations. Where they conflict, SRW regulations take precedence.</div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">3.1 — Conduct</span></div>
+  <p class="body">SRW operates under greater scrutiny than standard R&amp;S departments. Personnel are expected to maintain the highest standard of professionalism at all times. Conduct that would result in a warning in base R&amp;S may result in removal from SRW.</p>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">3.2 — Confidentiality</span></div>
+  <p class="body">All SRW personnel are bound by Protocol 7-C at the SRW/L5 tier. You may not disclose SRW research, assets, procedures, or personnel to anyone without explicit written authorisation from SRW Command. This obligation applies inside and outside the VRC, at all times.</p>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">3.3 — Testing</span></div>
+  <ol class="nl">
+    <li>All SRW tests must be approved by a Supervisory Specialist or above before beginning.</li>
+    <li>Tests must not exceed 30 minutes from rally to subject termination or return to containment.</li>
+    <li>Unit 4 assets may only be tested with SRW Command present or with explicit written authorisation from the Professor.</li>
+    <li>All SRW tests must be logged in the SRW documentation channel within 24 hours.</li>
+    <li>Security escort requirements follow standard R&amp;S rules scaled to the asset's risk classification.</li>
+    <li>Non-cooperative or breached subjects may be ordered for termination by the hosting researcher.</li>
+  </ol>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">3.4 — Chain of Command</span></div>
+  <div class="ab">Professor → Assistant Professor → Supervisory Specialist → Assistant Supervisory Specialist → Senior Specialist → Specialist Researcher → Junior Specialist Researcher → Specialist Associate</div>
+  <p class="body">Do not bypass the chain of command. All concerns, requests, and reports must be directed through your immediate superior first.</p>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">3.5 — Violations &amp; Consequences</span></div>
+  <table class="it">
+    <tr><td>Minor</td><td>Formal warning from SRW Command. Logged on personnel record.</td></tr>
+    <tr><td>Moderate</td><td>Suspension from SRW operations pending review by the Professor.</td></tr>
+    <tr><td>Major</td><td>Removal from SRW. Possible full removal from Research &amp; Studies.</td></tr>
+    <tr><td>Protocol 7-C</td><td class="red">Immediate review by Scientific Board and Executive Command. Permanent removal from VRC possible.</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 4: TESTING -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="testing">
+  <div class="s-head">
+    <span class="s-num">04</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">Testing Protocols</span>
+    <div class="s-line"></div>
+  </div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">4.1 — Pre-Experiment Requirements</span></div>
+  <ul class="bl">
+    <li>Written approval from a Supervisory Specialist or above.</li>
+    <li>Appropriate security escort confirmed and briefed before rally.</li>
+    <li>Documented hypothesis filed before the test begins.</li>
+    <li>SRW documentation channel log opened prior to start.</li>
+    <li>Unit 4 assets: SRW Command present or written authorisation from Professor on file.</li>
+  </ul>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">4.2 — During Experiments</span></div>
+  <ul class="bl">
+    <li>Notes must be taken in real time throughout the experiment.</li>
+    <li>Security escort maintains containment perimeter at all times.</li>
+    <li>Unexpected asset behaviour must be reported over radio immediately.</li>
+    <li>If containment is compromised, Protocol 1-A activates — all non-combative personnel evacuate.</li>
+    <li>Researcher holds authority over the security escort but may not order guards to violate their own guidelines.</li>
+  </ul>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">4.3 — Post-Experiment Requirements</span></div>
+  <ul class="bl">
+    <li>Full experiment log filed in the SRW documentation channel within 24 hours.</li>
+    <li>Any casualties or injuries reported to SRW Command and the Director of Research.</li>
+    <li>Asset returned to designated containment zone and confirmed secured.</li>
+    <li>Personnel do not disperse until asset is confirmed secure.</li>
+  </ul>
+
+  <div class="wb">A missing or incomplete log is a regulation violation and will be escalated to SRW Command regardless of experiment outcome.</div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">4.4 — Risk Levels</span></div>
+  <table class="rist">
+    <thead>
+      <tr><th>Level</th><th>Max Subjects</th><th>Security Required</th><th>Host Requirement</th></tr>
+    </thead>
+    <tbody>
+      <tr class="rl-low"><td>LOW</td><td>2</td><td>1 RCU, 1 total security</td><td>Any SRW personnel</td></tr>
+      <tr class="rl-med"><td>MEDIUM</td><td>4</td><td>2 RCU, 3 total security</td><td>Specialist Researcher+</td></tr>
+      <tr class="rl-high"><td>HIGH</td><td>8</td><td>1 JU, 3 RCU, 6 total security</td><td>Supervisory Specialist+</td></tr>
+      <tr class="rl-ext"><td>EXTREME</td><td>20</td><td>All available security</td><td>Professor / Department Head+</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 5: EQUIPMENT -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="equipment">
+  <div class="s-head">
+    <span class="s-num">05</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">Research Equipment &amp; Tools</span>
+    <div class="s-line"></div>
+  </div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">5.1 — Hadron Collider</span></div>
+  <div class="ab">Fires a high-energy beam at subjects. Can mutate, damage, kill, or atomically deconstruct. Sometimes lethal.</div>
+  <table class="it">
+    <tr><td>Restriction</td><td>Department Head+ free use. Lower ranks: CSO+ approval + Advisory Board+ escort required.</td></tr>
+    <tr><td>Operation</td><td>Swipe Hadron Card → Flip switch → Wait for green boxes → HADRON START → At required % → HADRON EJECT</td></tr>
+    <tr><td>51–55%</td><td>Converts entities into more dangerous entities.</td></tr>
+    <tr><td>46–50%</td><td>Teleports entities to another area.</td></tr>
+    <tr><td>Hard Limit</td><td class="red">DO NOT FIRE ABOVE 89%.</td></tr>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">5.2 — Radiation Chamber</span></div>
+  <div class="ab">Radiates subjects with infectious radiation. 100% lethal. Can spread to non-immune personnel.</div>
+  <table class="it">
+    <tr><td>Restriction</td><td>Assistant Researcher+ free use. Lower ranks: Senior Researcher+ escort required.</td></tr>
+    <tr><td>Operation</td><td>Swipe Door Lock → Close door → Set frequency → Close blinds → Press red button.</td></tr>
+    <tr><td>Warning</td><td class="red">NEVER fire with door or blinds open. Never approach irradiated subjects without immunity.</td></tr>
+    <tr><td>Post-Test</td><td>Immune combatives must terminate infected subjects to prevent radiation spread.</td></tr>
+    <tr><td>Frequency 4–5</td><td>F4 = weaker version of F5. F5 = speed boost to infected subjects. F1–3 = unknown.</td></tr>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">5.3 — Centrifuge</span></div>
+  <div class="ab">Spins subjects at high velocity. Never directly lethal in isolation. Anyone can operate.</div>
+  <table class="it">
+    <tr><td>5G</td><td>Vision begins to dim. Remains semi-dim until approximately 17G.</td></tr>
+    <tr><td>10G</td><td>HP begins lowering periodically until max HP reaches 20.</td></tr>
+    <tr><td>18G</td><td>Vision dims heavily.</td></tr>
+    <tr><td>19–20G</td><td>Vision turns severely red.</td></tr>
+    <tr><td>20G</td><td class="red">Vision permanently red. Max HP permanently set to 20.</td></tr>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">5.4 — Acid Vats</span></div>
+  <div class="ab">Collection of large acid vats. 100% lethal to non-infected. No restriction — anyone can use. Operation: jump in.</div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">5.5 — Field Tools</span></div>
+  <table class="it">
+    <tr><td>Radio</td><td>Primary communication tool. Most important piece of equipment. Always carry.</td></tr>
+    <tr><td>Cuffs</td><td>Restraint tool. Do not abuse.</td></tr>
+    <tr><td>Wand</td><td>Scans personnel for illegal contraband.</td></tr>
+    <tr><td>Tag</td><td>Grants turret immunity to active TS/CIS within range. If subject exits range, they are considered breached and subject to termination.</td></tr>
+    <tr><td>Translator</td><td>Previously used to understand specimens. No longer functional due to Roblox chat updates. Cosmetic only.</td></tr>
+    <tr><td>ID Paper</td><td>Cosmetic identification item for roleplay purposes.</td></tr>
+    <tr><td>Clipboard</td><td>Intended for field documentation. Rarely used in practice.</td></tr>
+    <tr><td>Fists</td><td>Close-quarters option. Particularly effective against bullet-resistant assets.</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 6: PROTOCOLS -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="protocols">
+  <div class="s-head">
+    <span class="s-num">06</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">Emergency Protocols</span>
+    <div class="s-line"></div>
+  </div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">Protocol 1-A — Containment Breach</span></div>
+  <p class="body">Activated the moment an entity exits its designated containment zone without authorisation.</p>
+  <ol class="nl">
+    <li>Any personnel who witnesses a breach declares it immediately over radio to the highest-ranking researcher present.</li>
+    <li>All non-combative personnel evacuate to the nearest designated safe zone immediately.</li>
+    <li>Ranking researcher assumes incident command and notifies security.</li>
+    <li>All adjacent testing operations are suspended immediately.</li>
+    <li>Breached entity is not engaged by researchers — contact is security personnel's responsibility only.</li>
+    <li>Unit 4 entities are terminate-on-sight unless Scientific Board+ explicitly orders otherwise.</li>
+    <li>All-clear issued only by incident commander once entity is confirmed recaptured or terminated.</li>
+    <li>Full incident report filed within 24 hours of the breach.</li>
+  </ol>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">Protocol 4-D — Biological Containment</span></div>
+  <p class="body">Activated on radiation spread, infected personnel contact, or unknown biological release.</p>
+  <ol class="nl">
+    <li>Affected area sealed immediately. Non-immune personnel must evacuate before sealing.</li>
+    <li>Ranking researcher notified and assumes quarantine command.</li>
+    <li>No non-immune personnel may enter the quarantine zone without explicit authorisation.</li>
+    <li>Immune combatives deployed to manage infected subjects within the quarantine zone.</li>
+    <li>Infected subjects that cannot be controlled are terminated by immune combatives to prevent spread.</li>
+    <li>Quarantine cleared only by ranking researcher once all subjects are contained or terminated.</li>
+  </ol>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">Protocol 5-A — Chain of Command During Incidents</span></div>
+  <p class="body">Command authority during an incident passes down this chain until a willing and available individual is reached:</p>
+  <ol class="nl">
+    <li>Director of Research</li>
+    <li>Assistant Director / Chief Research Officer</li>
+    <li>Scientific Board (most senior present)</li>
+    <li>Advisory Board (most senior present)</li>
+    <li>Department Head (most senior present)</li>
+    <li>Lead Researcher (most senior present)</li>
+    <li>Senior Researcher (most senior present)</li>
+  </ol>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">Protocol 9-A — Facility Lockdown</span></div>
+  <table class="it">
+    <tr><td>Level 1 — Precautionary</td><td>Potential threat identified but not confirmed. Move to nearest safe position. Await instruction. Non-essential movement discouraged.</td></tr>
+    <tr><td>Level 2 — Active Threat</td><td>Confirmed threat present. All non-combatives to safe zones immediately. All testing ceases. Security deploys to contain the threat.</td></tr>
+    <tr><td>Level 3 — Critical</td><td>Severe or uncontrolled threat. Evacuate to deepest safe zone. Only Executive Command and Scientific Board may issue or modify orders.</td></tr>
+  </table>
+  <div class="wb">Lockdown may only be lifted by the individual who declared it or a higher-ranking officer. Personnel must not resume normal operations until all-clear is confirmed over radio.</div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 7: PROTOCOL 7-C -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="protocol7c">
+  <div class="s-head">
+    <span class="s-num">07</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">Protocol 7-C — Classified Information Security</span>
+    <div class="s-line"></div>
+  </div>
+
+  <div class="wb">This section is mandatory reading for all SRW personnel. Protocol 7-C violations are treated as the most serious class of conduct breach within the VRC.</div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">7.1 — SRW Classification Tier</span></div>
+  <p class="body">All SRW records are classified at the L5/SRW tier — the highest available. They are accessible only to SRW members, the Scientific Board, and Executive Command. No exceptions are permitted without written authorisation from the Director of Research or Chief Research Officer.</p>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">7.2 — Violations</span></div>
+  <ul class="bl">
+    <li>Accessing, viewing, or distributing classified records without the required clearance.</li>
+    <li>Coercing, deceiving, or pressuring another personnel member into revealing classified information.</li>
+    <li>Sharing SRW-designated data with unauthorised individuals inside or outside the VRC.</li>
+    <li>Failing to report a known or suspected classified information breach.</li>
+  </ul>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">7.3 — Consequences</span></div>
+  <p class="body">Consequences range from formal warning and rank suspension to permanent termination from the VRC, depending on severity and intent. Repeated or deliberate violations result in immediate removal without review.</p>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">7.4 — Reporting</span></div>
+  <p class="body">All suspected Protocol 7-C violations must be reported directly to the Scientific Board or Executive Command. Reports must include the nature of the breach, the personnel involved, and any available evidence. Failure to report a known violation is itself a violation of Protocol 7-C.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 8: NEW MEMBER GUIDE -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="newmember">
+  <div class="s-head">
+    <span class="s-num">08</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">New Member Guide</span>
+    <div class="s-line"></div>
+  </div>
+
+  <div class="ab">If you are reading this, you have been selected for the Specialised Research Wing. This is not a routine assignment. Read everything in this section before your first deployment.</div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">8.1 — What to do first</span></div>
+  <ol class="nl">
+    <li>Read this entire handbook. You are expected to know its contents.</li>
+    <li>Acknowledge Protocol 7-C. Everything you encounter in SRW is classified.</li>
+    <li>Report to your supervising Specialist Researcher or Supervisory Specialist.</li>
+    <li>Do not deploy independently until instructed to do so by SRW Command.</li>
+    <li>As a Specialist Associate, you may only participate under direct supervision.</li>
+  </ol>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">8.2 — Promotion within SRW</span></div>
+  <ul class="bl">
+    <li>Actively participate in experiments and SRW operations.</li>
+    <li>Maintain a clean regulation record — violations significantly impact promotion eligibility.</li>
+    <li>Build a quality experiment log record in the SRW documentation channel.</li>
+    <li>Demonstrate understanding of SRW assets, procedures, and protocols.</li>
+    <li>Be formally recommended by a Supervisory Specialist or above.</li>
+  </ul>
+  <div class="wb">Do not ask for promotions repeatedly. SRW Command observes performance continuously. When you are ready, you will be promoted.</div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">8.3 — Contact Guide</span></div>
+  <table class="it">
+    <tr><td>General SRW questions</td><td>Supervising Specialist Researcher or Supervisory Specialist</td></tr>
+    <tr><td>Experiment approval</td><td>Supervisory Specialist or above — required before any experiment begins</td></tr>
+    <tr><td>Rank / promotion</td><td>Your supervising Supervisory Specialist</td></tr>
+    <tr><td>Regulation violations</td><td>Supervisory Specialist or the Professor directly</td></tr>
+    <tr><td>Protocol 7-C breach</td><td class="red">Professor and Director of Research — immediately</td></tr>
+    <tr><td>Containment breach</td><td>Declare over radio immediately. Protocol 1-A activates.</td></tr>
+    <tr><td>Issues with SRW Command</td><td>Director of Research — Dr. Adrian Voss</td></tr>
+    <tr><td>Anything not covered here</td><td>Professor — Prof. Connor Manwell</td></tr>
+  </table>
+
+  <!-- SIGNATURE -->
+  <div class="sig">
+    <div class="sig-lbl">Authorised by:</div>
+    <div class="sig-name">Prof. Connor Manwell</div>
+    <div class="sig-role">Professor — Specialised Research Wing</div>
+    <div class="sig-role">Vlandask Research Corporation</div>
+    <div class="sig-line-bar"></div>
+    <div class="sig-line-lbl">Authorised Signature</div>
+
+    <br><br>
+
+    <div class="sig-lbl">Countersigned by:</div>
+    <div class="sig-name">Dr. Adrian Voss</div>
+    <div class="sig-role">Director of Research — Research &amp; Studies Division</div>
+    <div class="sig-role">Vlandask Research Corporation</div>
+    <div class="sig-line-bar"></div>
+    <div class="sig-line-lbl">Countersignature</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="c-footer">██ &nbsp; TOP SECRET — SRW CLEARANCE REQUIRED — SRW-HB-001 &nbsp; ██</div>
+
+<script>
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+const navLinks = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('section[id]');
+
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.getAttribute('id');
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(s => navObs.observe(s));
+</script>
+</body>
+</html>
