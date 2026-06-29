@@ -49,6 +49,195 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--accent3); border-radius: 2px; }
 
+
+/* ══════════════════════════════════════════════
+   PASSWORD GATE
+══════════════════════════════════════════════ */
+#pw-gate {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#pw-gate.hidden { display: none; }
+.pw-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(74,63,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74,63,255,0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  animation: grid-pulse 8s ease-in-out infinite;
+}
+.pw-scan {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent2) 50%, var(--accent) 70%, transparent 100%);
+  animation: scan 8s linear infinite;
+  opacity: 0.5;
+}
+.pw-corner { position: absolute; width: 40px; height: 40px; }
+.pw-corner.tl { top: 32px; left: 32px; border-top: 1px solid var(--accent); border-left: 1px solid var(--accent); }
+.pw-corner.tr { top: 32px; right: 32px; border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+.pw-corner.bl { bottom: 32px; left: 32px; border-bottom: 1px solid var(--accent); border-left: 1px solid var(--accent); }
+.pw-corner.br { bottom: 32px; right: 32px; border-bottom: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+.pw-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 24px;
+  animation: fade-up 0.8s ease both;
+}
+.pw-top-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 48px;
+  border: 1px solid rgba(200,168,75,0.3);
+  padding: 5px 16px;
+}
+.pw-title {
+  font-size: clamp(32px, 7vw, 52px);
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: 0.18em;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.pw-title span { color: var(--accent2); }
+.pw-subtitle {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 48px;
+}
+.pw-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 36px;
+}
+.pw-divider-line { flex: 1; height: 1px; background: var(--border2); }
+.pw-divider-diamond { width: 6px; height: 6px; background: var(--accent); transform: rotate(45deg); flex-shrink: 0; }
+.pw-prompt {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+.pw-input-wrap {
+  width: 100%;
+  position: relative;
+  margin-bottom: 10px;
+}
+.pw-input-wrap::before {
+  content: ">";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--accent2);
+  pointer-events: none;
+}
+#pw-input {
+  width: 100%;
+  background: rgba(74,63,255,0.06);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--accent);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 16px;
+  letter-spacing: 0.25em;
+  padding: 14px 16px 14px 36px;
+  outline: none;
+  text-transform: uppercase;
+  transition: border-color 0.2s, background 0.2s;
+}
+#pw-input:focus { border-color: var(--accent2); background: rgba(74,63,255,0.1); }
+#pw-input.error { border-color: var(--red); border-left-color: var(--red); background: rgba(204,34,51,0.06); animation: shake 0.4s ease; }
+#pw-input.success { border-color: var(--green); border-left-color: var(--green); background: rgba(68,204,102,0.06); }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+.pw-error-msg {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--red2);
+  letter-spacing: 0.1em;
+  min-height: 18px;
+  margin-bottom: 16px;
+  align-self: flex-start;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.pw-error-msg.visible { opacity: 1; }
+#pw-submit {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 15px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  position: relative;
+  overflow: hidden;
+}
+#pw-submit:hover { background: var(--accent2); }
+#pw-submit:active { transform: scale(0.98); }
+#pw-submit::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+#pw-submit:hover::after { transform: translateX(100%); }
+.pw-footer-text {
+  margin-top: 36px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--dim);
+  text-align: center;
+}
+@keyframes gate-fade {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.04); pointer-events: none; }
+}
+.pw-gate-fade-out { animation: gate-fade 0.8s ease forwards; }
+
 /* ══════════════════════════════════════════════
    NAV
 ══════════════════════════════════════════════ */
@@ -704,6 +893,43 @@ body {
 </head>
 <body>
 
+<!-- PASSWORD GATE -->
+<div id="pw-gate">
+  <div class="pw-grid"></div>
+  <div class="pw-scan"></div>
+  <div class="pw-corner tl"></div>
+  <div class="pw-corner tr"></div>
+  <div class="pw-corner bl"></div>
+  <div class="pw-corner br"></div>
+
+  <div class="pw-body">
+    <div class="pw-top-label">&#x2588;&#x2588; &nbsp; TOP SECRET &nbsp; &#x2588;&#x2588;</div>
+
+    <div class="pw-title">SPECIAL<span>ISED</span><br>RESEARCH WING</div>
+    <div class="pw-subtitle">VRC &nbsp;&middot;&nbsp; Internal Handbook &nbsp;&middot;&nbsp; SRW-HB-001</div>
+
+    <div class="pw-divider">
+      <div class="pw-divider-line"></div>
+      <div class="pw-divider-diamond"></div>
+      <div class="pw-divider-line"></div>
+    </div>
+
+    <div class="pw-prompt">Enter Access Code</div>
+    <div class="pw-input-wrap">
+      <input id="pw-input" type="password" placeholder="&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;" autocomplete="off" spellcheck="false"/>
+    </div>
+    <div class="pw-error-msg" id="pw-error">ACCESS DENIED &mdash; INVALID CREDENTIALS</div>
+
+    <button id="pw-submit">Authenticate &nbsp;&#x25B8;</button>
+
+    <div class="pw-footer-text">
+      SRW-HB-001 &nbsp;&middot;&nbsp; VLANDASK RESEARCH CORPORATION &nbsp;&middot;&nbsp; L5 CLEARANCE REQUIRED<br>
+      Unauthorised access constitutes a Protocol 7-C violation.
+    </div>
+  </div>
+</div>
+
+
 <!-- NAV -->
 <nav class="nav">
   <a href="#hero" class="nav-logo">
@@ -721,6 +947,8 @@ body {
     <li><a href="#equipment">Equipment</a></li>
     <li><a href="#protocols">Protocols</a></li>
     <li><a href="#protocol7c">7-C</a></li>
+    <li><a href="#objects">Objects</a></li>
+    <li><a href="#entities">Entities</a></li>
     <li><a href="#newmember">New Members</a></li>
   </ul>
   <div class="nav-badge">L5 Clearance</div>
@@ -1097,12 +1325,122 @@ body {
   <p class="body">All suspected Protocol 7-C violations must be reported directly to the Scientific Board or Executive Command. Reports must include the nature of the breach, the personnel involved, and any available evidence. Failure to report a known violation is itself a violation of Protocol 7-C.</p>
 </section>
 
+
 <!-- ══════════════════════════════════════════════ -->
-<!-- SECTION 8: NEW MEMBER GUIDE -->
+<!-- SECTION 09: OBJECTS -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="objects">
+  <div class="s-head">
+    <span class="s-num">09</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">Objects &amp; Specimens</span>
+    <div class="s-line"></div>
+  </div>
+  <div class="ab">Objects are anomalous or biological materials used in SRW research. Each produces specific effects on human subjects on contact. All interactions must be documented in the SRW research log channel.</div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">9.1 &mdash; Unit 1: Standard Objects</span></div>
+  <table class="it">
+    <tr><td>Object #103</td><td>Red ball, unanchored and movable. No effect on humans. No restriction.</td></tr>
+    <tr><td>Object #012</td><td>No visible appearance or function. No effect on humans. File pending investigation.</td></tr>
+    <tr><td>Object #014</td><td>No visible appearance or function. No effect on humans. File pending investigation.</td></tr>
+    <tr><td>Object #149</td><td>No visible appearance or function. No effect on humans. File pending investigation.</td></tr>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">9.2 &mdash; Unit 2: Conversion Objects</span></div>
+  <p class="body">All Unit 2 objects convert human subjects into their corresponding entity form on contact. Restriction: Assistant Researcher+, approved by Senior Researcher+.</p>
+  <table class="it">
+    <tr><td>Object #097</td><td>Blue crystals, non-moving. Converts subject into Entity #097A &mdash; Blue Dragon.</td></tr>
+    <tr><td>Object #305</td><td>Red crystals, non-moving. Converts subject into Entity #305A &mdash; Crystal Wolf.</td></tr>
+    <tr><td>Object #221</td><td>White snow, non-moving. Converts subject into Entity #221A &mdash; Snow Leopard.</td></tr>
+    <tr><td>Object #001</td><td>White snow, non-moving. Converts subject into Entity #001A &mdash; White Wolf.</td></tr>
+    <tr><td>Object #990</td><td>Gray liquid, non-moving. Converts subject into Entity #990A &mdash; Dark Wolf.</td></tr>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">9.3 &mdash; Unit 2-B: Dangerous Conversion Objects</span></div>
+  <p class="body">Restriction: Supervised by Senior Researcher+, approved by Lead Researcher+.</p>
+  <table class="it">
+    <tr><td>Object #045</td><td>Red festering liquid, non-moving. Converts subject into Entity #045A (FireFox). <span style="color:var(--red2);font-weight:600">Warning: resulting entity is healed by fire &mdash; remove all fire equipment before testing.</span></td></tr>
+    <tr><td>Object #053</td><td>Gray liquid puddles, non-moving. Converts subject into Entity #053A (HypnoCat). Primary component in hybrid creation procedures.</td></tr>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">9.4 &mdash; Unit 3</span></div>
+  <table class="it">
+    <tr><td>Object #294</td><td>Vending machine with keypad. Dispenses any substance typed. No restriction. Unknown substances must only be administered to test subjects. Typing "life" gives varying effects. Consuming more than 3 items is lethal.</td></tr>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">9.5 &mdash; Unit 4: Restricted Specimens</span></div>
+  <div class="wb">Unit 4 specimens are accessible to SRW personnel and Scientific Board+ only. Protocol 7-C applies to all Unit 4 data. Professor authorisation required before any test.</div>
+  <table class="it">
+    <tr><td>Specimen #247</td><td>White liquid pool, non-moving. Converts subject into Entity #247A (SquidDog). Source object for the highest-threat entity on record. Used in advanced hybrid creation.</td></tr>
+    <tr><td>Specimen #220</td><td>Gray liquid pool, non-moving. Converts subject into Entity #220A (Tiger Shark). Key component in Hybrid #034A and #072A via Hadron Collider augmentation.</td></tr>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 10: ENTITIES -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section reveal" id="entities">
+  <div class="s-head">
+    <span class="s-num">10</span>
+    <span class="s-slash">//</span>
+    <span class="s-title">Entities &amp; Hybrids</span>
+    <div class="s-line"></div>
+  </div>
+  <div class="ab">Entities are transformed subjects produced by object exposure. All entity testing must be documented. Security escort is mandatory at all times during testing.</div>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">10.1 &mdash; Unit 2 Entities &nbsp;|&nbsp; Restriction: Assistant Researcher+</span></div>
+  <table class="rist">
+    <thead><tr><th>ID</th><th>Nickname</th><th>HP</th><th>Speed</th><th>Attack</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr class="rl-low"><td>#097A</td><td style="color:var(--white)">Blue Dragon</td><td style="color:var(--white)">300</td><td style="color:var(--muted)">Average</td><td style="color:var(--muted)">Melee / Claws</td><td style="color:var(--muted)">Blue shark. No special abilities.</td></tr>
+      <tr class="rl-low"><td>#305A</td><td style="color:var(--white)">Crystal Wolf</td><td style="color:var(--white)">375</td><td style="color:var(--muted)">Fast</td><td style="color:var(--muted)">Melee / Claws</td><td style="color:var(--muted)">Gray wolf, red head. Fast attack speed.</td></tr>
+      <tr class="rl-low"><td>#028A</td><td style="color:var(--white)">Snow Leopard</td><td style="color:var(--white)">300</td><td style="color:var(--muted)">Fast</td><td style="color:var(--muted)">Melee / Claws</td><td style="color:var(--red2);font-weight:600">Do NOT open door and allow it to run freely.</td></tr>
+      <tr class="rl-low"><td>#001A</td><td style="color:var(--white)">White Wolf</td><td style="color:var(--white)">450</td><td style="color:var(--muted)">Fast</td><td style="color:var(--muted)">Melee / Claws</td><td style="color:var(--muted)">White wolf. High HP &mdash; prepare escort accordingly.</td></tr>
+      <tr class="rl-low"><td>#990A</td><td style="color:var(--white)">Dark Wolf</td><td style="color:var(--white)">450</td><td style="color:var(--muted)">Fast</td><td style="color:var(--muted)">Melee / Claws</td><td style="color:var(--muted)">Gray wolf. Very fast melee speed. Higher threat than classification suggests.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">10.2 &mdash; Unit 2-B Entities &nbsp;|&nbsp; Senior Researcher+ supervision, Lead Researcher+ approval</span></div>
+  <table class="rist">
+    <thead><tr><th>ID</th><th>Nickname</th><th>HP</th><th>Speed</th><th>Abilities</th><th>Critical Warning</th></tr></thead>
+    <tbody>
+      <tr class="rl-high"><td>#045A</td><td style="color:var(--white)">FireFox</td><td style="color:var(--white)">275 / 407</td><td style="color:var(--muted)">Fast</td><td style="color:var(--muted)">Passive fire healing</td><td style="color:var(--red2);font-weight:600">DO NOT USE FIRE &mdash; fire heals this entity, raising its HP cap to 407.</td></tr>
+      <tr class="rl-high"><td>#053A</td><td style="color:var(--white)">HypnoCat</td><td style="color:var(--white)">375</td><td style="color:var(--muted)">Fast (small)</td><td style="color:var(--muted)">Hypno (slows target) &nbsp;&middot;&nbsp; Cloak (~10s invisible)</td><td style="color:var(--muted)">Brief security on Cloak ability before testing. Primary hybrid component.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">10.3 &mdash; Unit 4 Entities &nbsp;|&nbsp; SRW Clearance Required</span></div>
+  <div class="wb">Unit 4 entities restricted to Scientific Board+ or SRW members only. Protocol 1-A activates immediately on any confirmed breach involving these entities. Terminate on sight unless Scientific Board+ explicitly orders otherwise.</div>
+  <table class="rist">
+    <thead><tr><th>ID</th><th>Nickname</th><th>HP</th><th>Speed</th><th>Special Property</th><th>Field Notes</th></tr></thead>
+    <tbody>
+      <tr class="rl-ext"><td>#247A</td><td style="color:var(--white)">SquidDog</td><td style="color:var(--white)">1,000</td><td style="color:var(--muted)">Fast</td><td style="color:var(--red2);font-weight:600">BULLET RESISTANT &mdash; firearms deal 1 dmg/round</td><td style="color:var(--muted)">6-armed wolf-like. Neutralise with fists or sword only.</td></tr>
+      <tr class="rl-ext"><td>#220A</td><td style="color:var(--white)">Tiger Shark</td><td style="color:var(--white)">350</td><td style="color:var(--red2);font-weight:600">FASTEST ON RECORD</td><td style="color:var(--muted)">Extreme speed</td><td style="color:var(--muted)">Gray seal/shark. Small. Standard escorts insufficient for solo containment.</td></tr>
+      <tr class="rl-ext"><td>#029B</td><td style="color:var(--white)">Uriel</td><td style="color:var(--red2)">RESTRICTED</td><td style="color:var(--red2)">RESTRICTED</td><td style="color:var(--red2)">RESTRICTED</td><td style="color:var(--muted)">SRW Command clearance only.</td></tr>
+      <tr class="rl-ext"><td>#029C</td><td style="color:var(--white)">[Unnamed]</td><td style="color:var(--red2)">RESTRICTED</td><td style="color:var(--red2)">RESTRICTED</td><td style="color:var(--red2)">RESTRICTED</td><td style="color:var(--muted)">SRW Command clearance only.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub"><span class="sub-arrow">&gt;</span><span class="sub-text">10.4 &mdash; Hybrid Logs &nbsp;|&nbsp; SRW Clearance Required</span></div>
+  <div class="wb">All hybrid data is classified at L5/SRW. Advisory Board+, Ontology, or SRW members only may create hybrids. Lower ranks require Scientific Board+ approval and must be accompanied by an authorised member.</div>
+  <table class="rist">
+    <thead><tr><th>Designation</th><th>Components</th><th>Abilities</th><th>Risk Assessment</th></tr></thead>
+    <tbody>
+      <tr class="rl-high"><td>#053B</td><td style="color:var(--white)">#053A + #045A</td><td style="color:var(--muted)">Hypno &middot; Cloak &middot; Fire Resistance</td><td style="color:var(--orange);font-weight:700">DANGEROUS</td></tr>
+      <tr class="rl-ext"><td>#775A</td><td style="color:var(--white)">#053A + #220A</td><td style="color:var(--muted)">Cloak &middot; Hypno &middot; Infection &middot; Extreme Speed</td><td style="color:var(--red2);font-weight:700">EXTREME</td></tr>
+      <tr class="rl-ext"><td>#034A</td><td style="color:var(--white)">#034 + #220 + Hadron</td><td style="color:var(--muted)">Bullet Resistance &middot; 60 studs/sec movement</td><td style="color:var(--red2);font-weight:700">EXTREME</td></tr>
+      <tr class="rl-ext"><td>#072A</td><td style="color:var(--white)">#053 + #220 + #255 + 3x Hadron</td><td style="color:var(--muted)">Speed &middot; Bullet Resistance &middot; Unknown 3rd Effect &middot; Wall Perception</td><td style="color:var(--red2);font-weight:700">ARGUS LEVEL</td></tr>
+    </tbody>
+  </table>
+  <div class="wb">Hybrid #072A field data: withstood Juggernaut Unit engagement for 15 minutes &middot; evaded full facility security for 30&ndash;45 minutes &middot; perceived personnel through walls across the entire facility &middot; neutralised only by SET landmines and sentries. Highest documented threat level of any hybrid tested to date.</div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 11: NEW MEMBER GUIDE -->
 <!-- ══════════════════════════════════════════════ -->
 <section class="section reveal" id="newmember">
   <div class="s-head">
-    <span class="s-num">08</span>
+    <span class="s-num">11</span>
     <span class="s-slash">//</span>
     <span class="s-title">New Member Guide</span>
     <div class="s-line"></div>
@@ -1190,6 +1528,39 @@ const navObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.3 });
 
 sections.forEach(s => navObs.observe(s));
+
+// ── PASSWORD GATE ──
+const PW = 'VRCR-7C-SRW-4X9';
+const gate = document.getElementById('pw-gate');
+const pwInput = document.getElementById('pw-input');
+const pwError = document.getElementById('pw-error');
+const pwSubmit = document.getElementById('pw-submit');
+
+function attemptAccess() {
+  const val = pwInput.value.trim().toUpperCase();
+  if (val === PW) {
+    pwInput.classList.remove('error');
+    pwInput.classList.add('success');
+    pwError.classList.remove('visible');
+    pwSubmit.textContent = 'ACCESS GRANTED';
+    pwSubmit.style.background = '#44CC66';
+    setTimeout(() => {
+      gate.classList.add('pw-gate-fade-out');
+      setTimeout(() => gate.classList.add('hidden'), 800);
+    }, 600);
+  } else {
+    pwInput.classList.remove('success');
+    pwInput.classList.add('error');
+    pwError.classList.add('visible');
+    pwInput.value = '';
+    setTimeout(() => pwInput.classList.remove('error'), 500);
+  }
+}
+
+pwSubmit.addEventListener('click', attemptAccess);
+pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') attemptAccess(); });
+
+
 </script>
 </body>
 </html>
