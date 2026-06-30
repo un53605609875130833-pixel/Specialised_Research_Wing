@@ -232,6 +232,61 @@ body {
   color: var(--dim);
   text-align: center;
 }
+
+.pw-meme-warning {
+  width: 100%;
+  margin-top: 28px;
+  border: 1px solid var(--red);
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(204,34,51,0.07),
+    rgba(204,34,51,0.07) 10px,
+    rgba(204,34,51,0.12) 10px,
+    rgba(204,34,51,0.12) 20px
+  );
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  animation: meme-pulse 3s ease-in-out infinite;
+}
+
+@keyframes meme-pulse {
+  0%, 100% { border-color: var(--red); box-shadow: 0 0 0 rgba(204,34,51,0); }
+  50% { border-color: var(--red2); box-shadow: 0 0 16px rgba(204,34,51,0.25); }
+}
+
+.pw-meme-icon {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--red2);
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.pw-meme-text {
+  text-align: left;
+}
+
+.pw-meme-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--red2);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.pw-meme-body {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  color: #E8A8B0;
+}
 @keyframes gate-fade {
   0% { opacity: 1; transform: scale(1); }
   100% { opacity: 0; transform: scale(1.04); pointer-events: none; }
@@ -914,17 +969,26 @@ body {
       <div class="pw-divider-line"></div>
     </div>
 
-    <div class="pw-prompt">Enter Access Code</div>
+    <div class="pw-prompt">Enter One-Time Access Code</div>
     <div class="pw-input-wrap">
-      <input id="pw-input" type="password" placeholder="&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;" autocomplete="off" spellcheck="false"/>
+      <input id="pw-input" type="text" placeholder="VRCR-XXXX-XXXX" autocomplete="off" spellcheck="false"/>
     </div>
     <div class="pw-error-msg" id="pw-error">ACCESS DENIED &mdash; INVALID CREDENTIALS</div>
 
     <button id="pw-submit">Authenticate &nbsp;&#x25B8;</button>
 
+    <div class="pw-meme-warning">
+      <div class="pw-meme-icon">&#x26A0;</div>
+      <div class="pw-meme-text">
+        <div class="pw-meme-title">Memetic Hazard Notice</div>
+        <div class="pw-meme-body">Material beyond this point may contain cognitohazardous, memetic, or anomalous linguistic content. Personnel without SRW psychological clearance proceed at their own risk. Cease reading immediately and report to SRW Command if you experience disorientation, intrusive thoughts, or compulsions following exposure.</div>
+      </div>
+    </div>
+
     <div class="pw-footer-text">
       SRW-HB-001 &nbsp;&middot;&nbsp; VLANDASK RESEARCH CORPORATION &nbsp;&middot;&nbsp; L5 CLEARANCE REQUIRED<br>
-      Unauthorised access constitutes a Protocol 7-C violation.
+      Access codes are issued exclusively by the Director of Research or SRW Professor.<br>
+      Codes are single-use and device-bound. Unauthorised access constitutes a Protocol 7-C violation.
     </div>
   </div>
 </div>
@@ -1529,31 +1593,120 @@ const navObs = new IntersectionObserver((entries) => {
 
 sections.forEach(s => navObs.observe(s));
 
-// ── PASSWORD GATE ──
-const PW = 'VRCR-7C-SRW-4X9';
+// ── ACCESS CODE GATE (fingerprint-bound, API-backed) ──
+const ACCESS_API_URL = 'https://YOUR-ACCESS-API.up.railway.app'; // ← replace after deploying the backend
+
 const gate = document.getElementById('pw-gate');
 const pwInput = document.getElementById('pw-input');
 const pwError = document.getElementById('pw-error');
 const pwSubmit = document.getElementById('pw-submit');
 
-function attemptAccess() {
-  const val = pwInput.value.trim().toUpperCase();
-  if (val === PW) {
-    pwInput.classList.remove('error');
-    pwInput.classList.add('success');
-    pwError.classList.remove('visible');
-    pwSubmit.textContent = 'ACCESS GRANTED';
-    pwSubmit.style.background = '#44CC66';
-    setTimeout(() => {
-      gate.classList.add('pw-gate-fade-out');
-      setTimeout(() => gate.classList.add('hidden'), 800);
-    }, 600);
-  } else {
-    pwInput.classList.remove('success');
-    pwInput.classList.add('error');
-    pwError.classList.add('visible');
-    pwInput.value = '';
-    setTimeout(() => pwInput.classList.remove('error'), 500);
+// Generate a semi-stable browser fingerprint. This is NOT a true hardware ID —
+// browsers do not expose real HWIDs for privacy/security reasons. This combines
+// several browser/device signals into a single hash that stays consistent for
+// the same browser on the same device across visits, but will differ across
+// different browsers or devices, and can be reset by clearing site data.
+async function getFingerprint() {
+  const parts = [
+    navigator.userAgent,
+    navigator.language,
+    String(screen.width) + 'x' + String(screen.height),
+    String(screen.colorDepth),
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+    String(navigator.hardwareConcurrency || ''),
+    String(navigator.deviceMemory || ''),
+  ];
+
+  // Canvas fingerprint component
+  try {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillText('SRW-FP-' + navigator.userAgent, 2, 2);
+    parts.push(canvas.toDataURL());
+  } catch (e) { /* canvas blocked — fingerprint will just be less unique */ }
+
+  const raw = parts.join('|||');
+  const enc = new TextEncoder().encode(raw);
+  const hashBuf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function showError(reason) {
+  const messages = {
+    INVALID_CODE: 'ACCESS DENIED — INVALID CODE',
+    CODE_ALREADY_USED: 'ACCESS DENIED — CODE ALREADY REDEEMED',
+    CODE_EXPIRED: 'ACCESS DENIED — CODE EXPIRED',
+    NETWORK_ERROR: 'CONNECTION ERROR — TRY AGAIN',
+  };
+  pwError.textContent = messages[reason] || 'ACCESS DENIED — INVALID CREDENTIALS';
+  pwInput.classList.remove('success');
+  pwInput.classList.add('error');
+  pwError.classList.add('visible');
+  pwInput.value = '';
+  setTimeout(() => pwInput.classList.remove('error'), 500);
+}
+
+function grantAccess() {
+  pwInput.classList.remove('error');
+  pwInput.classList.add('success');
+  pwError.classList.remove('visible');
+  pwSubmit.textContent = 'ACCESS GRANTED';
+  pwSubmit.style.background = '#44CC66';
+  setTimeout(() => {
+    gate.classList.add('pw-gate-fade-out');
+    setTimeout(() => gate.classList.add('hidden'), 800);
+  }, 600);
+}
+
+// On page load: silently check if this device is already authorised.
+// If so, skip the gate entirely without the user needing to do anything.
+(async function checkExistingAccess() {
+  try {
+    const fingerprint = await getFingerprint();
+    const res = await fetch(`${ACCESS_API_URL}/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fingerprint }),
+    });
+    const data = await res.json();
+    if (data.authorised) {
+      gate.classList.add('hidden');
+    }
+  } catch (e) {
+    // API unreachable — fall through to showing the gate normally.
+    console.warn('SRW access check failed, showing gate.', e);
+  }
+})();
+
+async function attemptAccess() {
+  const code = pwInput.value.trim();
+  if (!code) return;
+
+  pwSubmit.disabled = true;
+  pwSubmit.textContent = 'VERIFYING...';
+
+  try {
+    const fingerprint = await getFingerprint();
+    const res = await fetch(`${ACCESS_API_URL}/redeem`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, fingerprint }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      grantAccess();
+    } else {
+      showError(data.reason);
+      pwSubmit.disabled = false;
+      pwSubmit.textContent = 'Authenticate \u25B8';
+    }
+  } catch (e) {
+    showError('NETWORK_ERROR');
+    pwSubmit.disabled = false;
+    pwSubmit.textContent = 'Authenticate \u25B8';
   }
 }
 
